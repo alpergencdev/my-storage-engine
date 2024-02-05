@@ -11,8 +11,10 @@ public class Main {
         HashIndex<Integer, Example> hashIndex = new HashIndex<>();
 
         hashIndex.write(1, new Example(19, "Mart", new int[] {1, 9, 9, 9}, true));
+        System.out.println(hashIndex.contains(1));
         System.out.println(hashIndex.get(1));
         hashIndex.delete(1);
+        System.out.println(hashIndex.contains(1));
         System.out.println(hashIndex.get(1));
     }
 

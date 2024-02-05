@@ -6,7 +6,7 @@ import java.util.List;
 
 public class HashIndex<K extends Serializable, V extends Serializable> {
 
-    private List<HashIndexSegment<K, V>> prevSegments;
+    private final List<HashIndexSegment<K, V>> prevSegments;
 
     private HashIndexSegment<K, V> currentSegment;
 
@@ -19,19 +19,16 @@ public class HashIndex<K extends Serializable, V extends Serializable> {
 
     public void write(K key, V value) {
         currentSegment.write(key, value);
-        if( currentSegment.getSize() > MAX_SEGMENT_SIZE_BYTES) {
-            prevSegments.add(0, currentSegment);
-            currentSegment = HashIndexSegment.create();
-        }
+        checkCurrentSegmentSize();
     }
 
-    public boolean contains(K key) throws Exception {
-        if(currentSegment.contains(key)) {
+    public boolean contains(K key) {
+        if(currentSegment.containsValueForKey(key)) {
             return true;
         }
 
         for( HashIndexSegment<K, V> segment : prevSegments) {
-            if(segment.contains(key)) {
+            if(segment.containsValueForKey(key)) {
                 return true;
             }
         }
@@ -39,13 +36,13 @@ public class HashIndex<K extends Serializable, V extends Serializable> {
         return false;
     }
 
-    public V get(K key) throws Exception {
-        if(currentSegment.contains(key)) {
+    public V get(K key) {
+        if(currentSegment.containsKeyEntry(key)) {
             return currentSegment.get(key);
         }
 
         for( HashIndexSegment<K, V> segment : prevSegments) {
-            if(segment.contains(key)) {
+            if(segment.containsKeyEntry(key)) {
                 return segment.get(key);
             }
         }
@@ -54,16 +51,16 @@ public class HashIndex<K extends Serializable, V extends Serializable> {
     }
 
     public void delete (K key) throws Exception {
-        if(currentSegment.contains(key)) {
-            currentSegment.delete(key);
-            return;
-        }
+        currentSegment.delete(key);
+        checkCurrentSegmentSize();
+    }
 
-        for( HashIndexSegment<K, V> segment : prevSegments) {
-            if(segment.contains(key)) {
-                segment.delete(key);
-                return;
-            }
+    public void checkCurrentSegmentSize() {
+        if( currentSegment.getSize() > MAX_SEGMENT_SIZE_BYTES) {
+            currentSegment.freeze();
+            prevSegments.add(0, currentSegment);
+            currentSegment = HashIndexSegment.create();
         }
     }
+
 }

@@ -1,10 +1,12 @@
-package com.alpergencdev.common.io;
+package com.alpergencdev.indexes.hash_index;
 
 import java.io.Serializable;
 
 public class FileEntry<K extends Serializable, V extends Serializable> implements Serializable {
-    K key;
-    V value;
+    public final K key;
+    public final V value;
+
+
 
     public FileEntry(K key, V value) {
         this.key = key;
