@@ -50,7 +50,7 @@ public class HashIndex<K extends Serializable, V extends Serializable> {
         return null;
     }
 
-    public void delete (K key) throws Exception {
+    public void delete (K key) {
         currentSegment.delete(key);
         checkCurrentSegmentSize();
     }

@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.*;
 
 public class HashIndexSegment<K extends Serializable, V extends Serializable> {
-    private Map<K, Integer> addresses;
+    private final Map<K, Integer> addresses;
     private int size = 0;
 
     private final String path;
